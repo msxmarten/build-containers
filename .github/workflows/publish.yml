@@ -19,8 +19,9 @@ jobs:
         #   DOCKERFILES=$(find . -name Dockerfile | cut -d "/" -f2 | sed ':a;N;$!ba;s/\n/","/g')
         #   DOCKERFILES_JSON="\"$DOCKERFILES\""
         #   echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES_JSON]}"
+        shell: pwsh
         run: |
-          $DOCKERFILES = Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName } -join '","'
+          $DOCKERFILES = Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] } -join '","'
           echo $DOCKERFILES
           $DOCKERFILES_JSON = "`"$DOCKERFILES`""
           echo "::set-output name=matrix::{`"dockerfile`":[$DOCKERFILES_JSON]}"
