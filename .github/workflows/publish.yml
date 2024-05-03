@@ -40,6 +40,7 @@ jobs:
           }
           $dockerfileJson = $dockerfileObject | ConvertTo-Json -Compress
           echo "::set-output name=matrix::$dockerfileJson"
+          Write-Output $dockerfileJson
 
   publish-image:
     needs: prepare
