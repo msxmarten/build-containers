@@ -57,7 +57,7 @@ jobs:
 
           $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags -join ","
           $TAGS = $TAGS -split ","
-          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "\n"
+          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "`n"
           echo "::set-output name=tags::$TAGS"
           $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
           echo "::set-output name=name::$NAME"
@@ -68,7 +68,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ghcr.io/msxmarten/build-containers/${{ steps.parse.outputs.name }}
-          tags: |
+          tags: >
             ${{ steps.parse.outputs.tags }}
 
 
@@ -77,5 +77,5 @@ jobs:
         with:
           context: ${{ matrix.dockerfile }}
           push: true
-          tags: |
+          tags: >
             ${{ steps.meta.outputs.tags }}
