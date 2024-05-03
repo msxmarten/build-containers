@@ -55,14 +55,15 @@ jobs:
           # NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
           # echo "::set-output name=name::$NAME"
 
+          Install-Module -Name powershell-yaml
           $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags -join ","
           $TAGS = $TAGS -split ","
-          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) 
-          $TAGS_JSON = $TAGS | ConvertTo-Json -Compress
-          echo "::set-output name=tags::$TAGS_JSON"
+          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "`n" 
+          $TAGS_YAML = $TAGS | ConvertTo-Yaml
+          echo "::set-output name=tags::$TAGS_YAML"
           $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
           echo "::set-output name=name::$NAME"
-          Write-Output "$TAGS_JSON"
+          Write-Output "$TAGS_YAML"
 
       
       - name: Docker meta
@@ -71,7 +72,7 @@ jobs:
         with:
           images: ghcr.io/msxmarten/build-containers/${{ steps.parse.outputs.name }}
           tags: |
-            ${{ fromJson(steps.parse.outputs.tags) }}
+            ${{ steps.parse.outputs.tags }}
 
 
       - name: Build and push
@@ -80,4 +81,4 @@ jobs:
           context: ${{ matrix.dockerfile }}
           push: true
           tags: |
-            ${{ fromJson(steps.meta.outputs.tags) }}
+            ${{ steps.meta.outputs.tags }}
