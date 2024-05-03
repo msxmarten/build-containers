@@ -26,4 +26,4 @@ jobs:
         with:
           context: opentofu-1.7.0
           push: true
-          tags: ghcr.io/opentofu:latest
+          tags: ghcr.io/${{ github.repository }}/opentofu:latest
