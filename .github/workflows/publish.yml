@@ -57,7 +57,7 @@ jobs:
 
           $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags -join ","
           $TAGS = $TAGS -split ","
-          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join ","
+          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "\n"
           echo "::set-output name=tags::$TAGS"
           $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
           echo "::set-output name=name::$NAME"
