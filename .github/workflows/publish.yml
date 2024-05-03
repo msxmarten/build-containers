@@ -41,15 +41,15 @@ jobs:
               }
             }
           }
-          $dockerfileJson = $dockerfileObject | ConvertTo-Json -Compress
-          echo "::set-output name=matrix::$dockerfileJson"
+          $matrixJson = $matrixObject | ConvertTo-Json -Compress
+          echo "::set-output name=matrix::$matrixJson"
           Write-Output $dockerfileJson
 
   publish-image:
     needs: prepare
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix).combination }}
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
