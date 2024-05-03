@@ -17,9 +17,9 @@ jobs:
         id: set-matrix
         run: |
           DOCKERFILES=$(find . -name Dockerfile | sed 's|/[^/]*$||' | sed 's|^./||')
-          DOCKERFILES="[\"${DOCKERFILES:0:-1}\"]"
-          echo "{\"dockerfile\":[$DOCKERFILES]}"
-          echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES]}"
+          DOCKERFILES_JSON=$(python -c "import json; print(json.dumps({'dockerfile': '$DOCKERFILES'.split()}))")
+          echo $DOCKERFILES_JSON
+          echo "::set-output name=matrix::$DOCKERFILES_JSON"
 
   publish-image:
     runs-on: ubuntu-latest
