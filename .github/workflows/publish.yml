@@ -21,6 +21,7 @@ jobs:
           echo "::set-output name=matrix::$DOCKERFILES"
 
   publish-image:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
