@@ -47,20 +47,20 @@ jobs:
       
       - name: Parse tags
         id: parse
-        # shell: pwsh
+        shell: pwsh
         run: |
-          TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
-          TAGS=$(echo $TAGS | awk 'BEGIN{RS=","; OFS=","} {print "type=raw,value="$1}')
-          echo "::set-output name=tags::$TAGS"
-          NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
-          echo "::set-output name=name::$NAME"
-
-          # $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags -join ","
-          # $TAGS = $TAGS -split ","
-          # $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "`n"
+          # TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
+          # TAGS=$(echo $TAGS | awk 'BEGIN{RS=","; OFS=","} {print "type=raw,value="$1}')
           # echo "::set-output name=tags::$TAGS"
-          # $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
+          # NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
           # echo "::set-output name=name::$NAME"
+
+          $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags -join ","
+          $TAGS = $TAGS -split ","
+          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join ","
+          echo "::set-output name=tags::$TAGS"
+          $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
+          echo "::set-output name=name::$NAME"
 
       
       - name: Docker meta
