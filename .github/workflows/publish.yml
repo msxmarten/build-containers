@@ -20,9 +20,9 @@ jobs:
         #   DOCKERFILES_JSON="\"$DOCKERFILES\""
         #   echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES_JSON]}"
         run: |
-          $DOCKERFILES = (Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] }) -join '","'
+          $DOCKERFILES = Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] } -join '","'
           $DOCKERFILES_JSON = "`"$DOCKERFILES`""
-          echo "::set-output name=matrix::{`"dockerfile`":[`$DOCKERFILES_JSON]}"
+          echo "::set-output name=matrix::{`"dockerfile`":[$DOCKERFILES_JSON]}"
 
   publish-image:
     needs: prepare
