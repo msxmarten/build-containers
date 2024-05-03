@@ -21,10 +21,25 @@ jobs:
         #   echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES_JSON]}"
         shell: pwsh
         run: |
-          $DOCKERFILES = (Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] }) -join '","'
-          echo $DOCKERFILES
-          $DOCKERFILES_JSON = "`"$DOCKERFILES`""
-          echo "::set-output name=matrix::{`"dockerfile`":[$DOCKERFILES_JSON]}"
+          # $DOCKERFILES = (Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] }) -join '","'
+          # echo $DOCKERFILES
+          # $DOCKERFILES_JSON = "`"$DOCKERFILES`""
+          # echo "::set-output name=matrix::{`"dockerfile`":[$DOCKERFILES_JSON]}"
+
+          $dockerfileObject = @()
+          $DOCKERFILES = (Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] })
+          foreach ($DOCKERFILE in $DOCKERFILES) {
+            $tags = Get-Content "./$DOCKERFILE/tags.json" | ConvertFrom-Json
+            foreach ($tag in $tags.tags) {
+              $dockerfileObject += @{
+                "directory" = $DOCKERFILE
+                "name" = $DOCKERFILE -split "-" | Select-Object -First 1
+                "tag" = "type=raw,value=$tag"
+              }
+            }
+          }
+          $dockerfileJson = $dockerfileObject | ConvertTo-Json -Compress
+          echo "::set-output name=matrix::$dockerfileJson"
 
   publish-image:
     needs: prepare
@@ -45,37 +60,40 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Parse tags
-        id: parse
-        shell: pwsh
-        run: |
-          # TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
-          # TAGS=$(echo $TAGS | awk 'BEGIN{RS=","; OFS=","} {print "type=raw,value="$1}')
-          # echo "::set-output name=tags::$TAGS"
-          # NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
-          # echo "::set-output name=name::$NAME"
+      # - name: Parse tags
+      #   id: parse
+      #   shell: pwsh
+      #   run: |
+      #     # TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
+      #     # TAGS=$(echo $TAGS | awk 'BEGIN{RS=","; OFS=","} {print "type=raw,value="$1}')
+      #     # echo "::set-output name=tags::$TAGS"
+      #     # NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
+      #     # echo "::set-output name=name::$NAME"
 
-          $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags -join ","
-          $TAGS = $TAGS -split ","
-          $TAGS = $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "`n" 
-          echo "::set-output name=tags::$TAGS"
-          $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
-          echo "::set-output name=name::$NAME"
+      #     $TAGS = (Get-Content ${{ matrix.dockerfile }}/tags.json | ConvertFrom-Json).tags
+      #     $TAGS = ($TAGS | ForEach-Object { "type=raw,value=$_" }) -join "`n" 
+      #     $TAGS = $TAGS -split "`n"
+      #     foreach ($TAG in $TAGS) {
+      #       echo "::set-output name=tags::$TAG"
+      #     }
+
+      #     $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
+      #     echo "::set-output name=name::$NAME"
 
       
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ghcr.io/msxmarten/build-containers/${{ steps.parse.outputs.name }}
-          tags: |-
-            ${{ steps.parse.outputs.tags }}
+          images: ghcr.io/msxmarten/build-containers/${{ matrix.name }}
+          tags: |
+            ${{ matrix.tag }}
 
 
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ${{ matrix.dockerfile }}
+          context: ${{ matrix.directory }}
           push: true
-          tags: |-
+          tags: |
             ${{ steps.meta.outputs.tags }}
