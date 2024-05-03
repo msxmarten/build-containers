@@ -59,7 +59,7 @@ jobs:
           $TAGS = $TAGS -split ","
           $TAGS = $TAGS | ForEach-Object { "type=raw,value=$_" }
           echo "::set-output name=tags::$TAGS"
-          $NAME = ${{ matrix.dockerfile }} -split "-" | Select-Object -First 1
+          $NAME = "${{ matrix.dockerfile }}" -split "-" | Select-Object -First 1
           echo "::set-output name=name::$NAME"
 
       
