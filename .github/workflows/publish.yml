@@ -26,12 +26,15 @@ jobs:
           # $DOCKERFILES_JSON = "`"$DOCKERFILES`""
           # echo "::set-output name=matrix::{`"dockerfile`":[$DOCKERFILES_JSON]}"
 
+          $matrixObject = @{
+            "combination" = @()
+          }
           $dockerfileObject = @{}
           $DOCKERFILES = (Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] })
           foreach ($DOCKERFILE in $DOCKERFILES) {
             $tags = Get-Content "./$DOCKERFILE/tags.json" | ConvertFrom-Json
             foreach ($tag in $tags.tags) {
-              $dockerfileObject["$($DOCKERFILE)-$($tag)"] = @{
+              $matrixObject["combination"] += @{
                 "directory" = $DOCKERFILE
                 "name" = $DOCKERFILE -split "-" | Select-Object -First 1
                 "tag" = "type=raw,value=$tag"
