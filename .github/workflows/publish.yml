@@ -47,6 +47,7 @@ jobs:
       
       - name: Parse tags
         id: parse
+        shell: pwsh
         run: |
           # TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
           # TAGS=$(echo $TAGS | awk 'BEGIN{RS=","; OFS=","} {print "type=raw,value="$1}')
