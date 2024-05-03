@@ -16,7 +16,7 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
-          DOCKERFILES=$(find . -name Dockerfile | sed 's|/[^/]*$||' | sed 's|^./||' | sed ':a;N;$!ba;s/\n/","/g')
+          DOCKERFILES=$(find . -name Dockerfile | cut -d "/" -f2 | sed ':a;N;$!ba;s/\n/","/g')
           DOCKERFILES_JSON="\"$DOCKERFILES\""
           echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES_JSON]}"
 
