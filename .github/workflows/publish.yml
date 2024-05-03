@@ -43,6 +43,7 @@ jobs:
         id: parse
         run: |
           TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
+          TAGS=$(echo $TAGS | awk 'BEGIN{RS=","; OFS=","} {print "type=raw,value="$1}')
           echo "::set-output name=tags::$TAGS"
           NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
           echo "::set-output name=name::$NAME"
@@ -52,11 +53,14 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ghcr.io/msxmarten/build-containers/${{ steps.parse.outputs.name }}
-          tags: ${{ steps.parse.outputs.tags }}
+          tags: |
+            ${{ steps.parse.outputs.tags }}
+
 
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           context: ${{ matrix.dockerfile }}
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
