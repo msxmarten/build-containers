@@ -16,9 +16,8 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
-          DOCKERFILES="{\"dockerfiles\": [\"opentofu-1.7\"]}"
-          echo $DOCKERFILES
-          echo "::set-output name=matrix::$DOCKERFILES"
+          DOCKERFILES=$(find . -name Dockerfile | sed 's|/[^/]*$||' | sed 's|^./||')
+          echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES]}"
 
   publish-image:
     needs: prepare
