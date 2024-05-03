@@ -16,10 +16,9 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
-          DOCKERFILES=$(find . -name Dockerfile | sed 's|/[^/]*$||' | sed 's|^./||')
-          DOCKERFILES_JSON=$(python -c "import json; print(json.dumps({'dockerfile': '$DOCKERFILES'.split()}))")
-          echo $DOCKERFILES_JSON
-          echo "::set-output name=matrix::$DOCKERFILES_JSON"
+          DOCKERFILES="{\"dockerfiles\": [\"opentofu-1.7\"]}"
+          echo $DOCKERFILES
+          echo "::set-output name=matrix::$DOCKERFILES"
 
   publish-image:
     runs-on: ubuntu-latest
