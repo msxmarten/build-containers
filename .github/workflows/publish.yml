@@ -31,7 +31,7 @@ jobs:
           foreach ($DOCKERFILE in $DOCKERFILES) {
             $tags = Get-Content "./$DOCKERFILE/tags.json" | ConvertFrom-Json
             foreach ($tag in $tags.tags) {
-              $dockerfileObject += @{
+              $dockerfileObject["$($DOCKERFILE)-$($tag)"] = @{
                 "directory" = $DOCKERFILE
                 "name" = $DOCKERFILE -split "-" | Select-Object -First 1
                 "tag" = "type=raw,value=$tag"
