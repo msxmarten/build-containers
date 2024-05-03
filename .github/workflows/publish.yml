@@ -44,12 +44,14 @@ jobs:
         run: |
           TAGS=$(jq -r '.tags | join(",")' ${{ matrix.dockerfile }}/tags.json)
           echo "::set-output name=tags::$TAGS"
+          NAME=$(echo ${{ matrix.dockerfile}} | cut -d"-" -f1)
+          echo "::set-output name=name::$NAME"
       
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ghcr.io/msxmarten/build-containers/opentofu
+          images: ghcr.io/msxmarten/build-containers/${{ steps.parse.outputs.name }}
           tags: ${{ steps.parse.outputs.tags }}
 
       - name: Build and push
