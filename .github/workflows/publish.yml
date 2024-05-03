@@ -15,10 +15,14 @@ jobs:
 
       - name: Set matrix for build
         id: set-matrix
+        # run: |
+        #   DOCKERFILES=$(find . -name Dockerfile | cut -d "/" -f2 | sed ':a;N;$!ba;s/\n/","/g')
+        #   DOCKERFILES_JSON="\"$DOCKERFILES\""
+        #   echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES_JSON]}"
         run: |
-          DOCKERFILES=$(find . -name Dockerfile | cut -d "/" -f2 | sed ':a;N;$!ba;s/\n/","/g')
-          DOCKERFILES_JSON="\"$DOCKERFILES\""
-          echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES_JSON]}"
+          $DOCKERFILES = (Get-ChildItem -Recurse -Filter Dockerfile | ForEach-Object { $_.DirectoryName.Split("/")[6] }) -join '","'
+          $DOCKERFILES_JSON = "`"$DOCKERFILES`""
+          echo "::set-output name=matrix::{`"dockerfile`":[`$DOCKERFILES_JSON]}"
 
   publish-image:
     needs: prepare
