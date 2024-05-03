@@ -25,7 +25,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ghcr.io/${{ github.repository }}/opentofu
+          images: ghcr.io/msxmarten/${{ github.repository }}/opentofu
           tags: |
             latest
 
