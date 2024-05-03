@@ -17,7 +17,8 @@ jobs:
         id: set-matrix
         run: |
           DOCKERFILES=$(find . -name Dockerfile | sed 's|/[^/]*$||' | sed 's|^./||')
-          echo "::set-output name=matrix::{\"dockerfile\":[$DOCKERFILES]}"
+          echo $DOCKERFILES
+          echo "::set-output name=matrix::{\"dockerfile\":[\"$DOCKERFILES\"]}"
 
   publish-image:
     runs-on: ubuntu-latest
