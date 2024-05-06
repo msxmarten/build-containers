@@ -19,9 +19,7 @@ jobs:
         shell: pwsh
         run: |
             $MATRIX = '{"include": [{"name": "terraform","tags": "latest"},{"name": "opentofu","tags": "latest"}]}'
-            $MATRIX_JSON = $MATRIX | ConvertFrom-Json | ConvertTo-Json -Depth 100
-            echo $MATRIX_JSON
-            echo "::set-output name=matrix::$MATRIX_JSON"
+            echo "::set-output name=matrix::$MATRIX"
 
   publish-image:
     needs: prepare-matrix
