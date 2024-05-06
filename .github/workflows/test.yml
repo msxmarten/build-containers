@@ -18,7 +18,7 @@ jobs:
         id: create-matrix
         shell: pwsh
         run: |
-            $MATRIX = '{"include": [{"name": "terraform","tags": "latest"},{"name": "opentofu","tags": "latest"}]}'
+            $MATRIX = '{"hallo": [{"name": "terraform","tags": "latest"},{"name": "opentofu","tags": "latest"}]}'
             echo "::set-output name=matrix::$MATRIX"
 
   publish-image:
