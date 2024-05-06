@@ -17,19 +17,7 @@ jobs:
       - name: Create matrix
         id: create-matrix
         run: |
-          MATRIX_JSON=$(jq -n '{
-            "include": [
-              {
-                "name": "terraform",
-                "tags": "latest"
-              },
-              {
-                "name": "opentofu",
-                "tags": "latest"
-              }
-              # Add more dynamic entries as needed
-            ]
-          }')
+          MATRIX_JSON=$(jq -n '{"include": [{"name": "terraform","tags": "latest"},{"name": "opentofu","tags": "latest"}]}')
           echo "::set-output name=matrix::$MATRIX_JSON"
 
   publish-image:
